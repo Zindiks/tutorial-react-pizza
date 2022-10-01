@@ -2,13 +2,22 @@
 
 .sort {
   position: relative;
+  transition: all 0.5s ease-in-out;
+
+  svg {
+    margin-right: 8px;
+    transition: all 0.1s ease-in-out;
+  }
+
+  &:has(.sort__popup) {
+    svg {
+      rotate: 180deg;
+    }
+  }
+
   &__label {
     display: flex;
     align-items: center;
-
-    svg {
-      margin-right: 8px;
-    }
 
     b {
       margin-right: 8px;

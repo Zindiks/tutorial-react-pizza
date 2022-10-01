@@ -1,7 +1,15 @@
 import React from 'react';
 import CartItem from '../components/CartItem';
+import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 export default function Cart() {
+  const { items, totalPrice } = useSelector((state) => state.cartSlice);
+
+  const testPrice = items.reduce((total, item) => item.price * item.count + total, 0);
+
+  console.log(testPrice);
+
   return (
     <>
       <div className="cart">
@@ -81,24 +89,26 @@ export default function Cart() {
         </div>
 
         <div className="cart__items">
-          <CartItem />
-          <CartItem />
-          <CartItem />
+          {items
+            ? items.map((item) => {
+                return <CartItem key={item.currentPizza} {...item} />;
+              })
+            : 'пусто'}
         </div>
 
         <div className="cart__bottom">
           <div className="cart__bottom-details">
             <span>
               {' '}
-              Всего пицц: <b>3 шт.</b>{' '}
+              Всего пицц: <b>{items.length} шт.</b>{' '}
             </span>
             <span>
               {' '}
-              Сумма заказа: <b>900 ₽</b>{' '}
+              Сумма заказа: <b>{testPrice} ₽</b>{' '}
             </span>
           </div>
           <div className="cart__bottom-buttons">
-            <a href="/" className="button button--outline button--add go-back-btn">
+            <Link to="/" className="button button--outline button--add go-back-btn">
               <svg
                 width="8"
                 height="14"
@@ -116,7 +126,7 @@ export default function Cart() {
               </svg>
 
               <span>Вернуться назад</span>
-            </a>
+            </Link>
             <div className="button pay-btn">
               <span>Оплатить сейчас</span>
             </div>

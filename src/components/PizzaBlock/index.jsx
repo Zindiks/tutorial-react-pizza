@@ -1,9 +1,49 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { onClickPlus } from '../../redux/slices/cartSlice';
 
-export default function PizzaBlock({ title, price, imageUrl, sizes, types }) {
+export default function PizzaBlock({ title, price, imageUrl, sizes, types, id }) {
   const typeNames = ['тонкое', 'традиционное'];
   const [sizeActive, setSizeActive] = useState(0);
   const [typeActive, setTypeActive] = useState('');
+  const [currentPrice, setCurrentPrice] = useState(price);
+
+  const dispatch = useDispatch();
+
+  const currentPizza = `PID${id}-PZT${typeActive}-PZS${sizes[sizeActive]}`;
+
+  useEffect(() => {
+    let newPrice;
+    switch (sizes[sizeActive]) {
+      case 30:
+        newPrice = price + 100;
+        break;
+      case 40:
+        newPrice = price + 200;
+        break;
+      default:
+        newPrice = price;
+    }
+
+    setCurrentPrice(newPrice);
+  }, [currentPrice, sizeActive, price, sizes]);
+
+  const onChangeSize = (index) => {
+    setSizeActive(index);
+  };
+
+  const onClickAdd = () => {
+    const item = {
+      id,
+      imageUrl,
+      size: sizes[sizeActive],
+      type: typeNames[typeActive],
+      currentPizza,
+      price: currentPrice,
+      title,
+    };
+    dispatch(onClickPlus(item));
+  };
 
   return (
     <div className="pizza-block">
@@ -31,7 +71,7 @@ export default function PizzaBlock({ title, price, imageUrl, sizes, types }) {
             return (
               <li
                 key={index}
-                onClick={() => setSizeActive(index)}
+                onClick={() => onChangeSize(index)}
                 className={sizeActive === index ? 'active' : ''}
               >
                 {size} см.
@@ -41,7 +81,7 @@ export default function PizzaBlock({ title, price, imageUrl, sizes, types }) {
         </ul>
       </div>
       <div className="pizza-block__bottom">
-        <div className="pizza-block__price">от {price} ₽</div>
+        <div className="pizza-block__price">{currentPrice} ₽</div>
         <div className="button button--outline button--add">
           <svg
             width="12"
@@ -55,8 +95,8 @@ export default function PizzaBlock({ title, price, imageUrl, sizes, types }) {
               fill="white"
             />
           </svg>
-          <span>Добавить</span>
-          <i>2</i>
+          <span onClick={onClickAdd}>Добавить</span>
+          {/* <i>2</i> */}
         </div>
       </div>
     </div>
